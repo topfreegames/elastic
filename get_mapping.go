@@ -9,7 +9,7 @@ import (
 	"net/url"
 	"strings"
 
-	"gopkg.in/olivere/elastic.v2/uritemplates"
+	"gopkg.in/topfreegames/elastic.v2/uritemplates"
 )
 
 // GetMappingService retrieves the mapping definitions for an index or

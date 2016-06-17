@@ -10,7 +10,7 @@ import (
 	"fmt"
 	"net/url"
 
-	"gopkg.in/olivere/elastic.v2/uritemplates"
+	"gopkg.in/topfreegames/elastic.v2/uritemplates"
 )
 
 // BulkService allows for batching bulk requests and sending them to

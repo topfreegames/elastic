@@ -8,7 +8,7 @@ import (
 	"fmt"
 	"net/url"
 
-	"gopkg.in/olivere/elastic.v2/uritemplates"
+	"gopkg.in/topfreegames/elastic.v2/uritemplates"
 )
 
 // OpenIndexService opens an index.

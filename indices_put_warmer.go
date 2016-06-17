@@ -9,7 +9,7 @@ import (
 	"net/url"
 	"strings"
 
-	"gopkg.in/olivere/elastic.v2/uritemplates"
+	"gopkg.in/topfreegames/elastic.v2/uritemplates"
 )
 
 // IndicesPutWarmerService allows to register a warmer.

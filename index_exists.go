@@ -7,7 +7,7 @@ package elastic
 import (
 	"fmt"
 
-	"gopkg.in/olivere/elastic.v2/uritemplates"
+	"gopkg.in/topfreegames/elastic.v2/uritemplates"
 )
 
 type IndexExistsService struct {

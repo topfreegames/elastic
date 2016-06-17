@@ -9,7 +9,7 @@ import (
 	"net/http"
 	"net/url"
 
-	"gopkg.in/olivere/elastic.v2/uritemplates"
+	"gopkg.in/topfreegames/elastic.v2/uritemplates"
 )
 
 // ExistsService checks if a document exists.

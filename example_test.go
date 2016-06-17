@@ -12,7 +12,7 @@ import (
 	"reflect"
 	"time"
 
-	elastic "gopkg.in/olivere/elastic.v2"
+	elastic "gopkg.in/topfreegames/elastic.v2"
 )
 
 type Tweet struct {

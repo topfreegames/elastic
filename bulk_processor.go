@@ -9,7 +9,7 @@ import (
 	"sync/atomic"
 	"time"
 
-	"gopkg.in/olivere/elastic.v2/backoff"
+	"gopkg.in/topfreegames/elastic.v2/backoff"
 )
 
 // BulkProcessorService allows to easily process bulk requests. It allows setting
