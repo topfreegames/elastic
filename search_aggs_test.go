@@ -908,7 +908,7 @@ func TestAggs(t *testing.T) {
 }
 
 // TestAggsMarshal ensures that marshaling aggregations back into a string
-// does not yield base64 encoded data. See https://github.com/olivere/elastic/issues/51
+// does not yield base64 encoded data. See https://github.com/topfreegames/elastic/issues/51
 // and https://groups.google.com/forum/#!topic/Golang-Nuts/38ShOlhxAYY for details.
 func TestAggsMarshal(t *testing.T) {
 	client := setupTestClientAndCreateIndex(t)
@@ -2668,7 +2668,7 @@ func TestAggsSubAggregates(t *testing.T) {
 }
 
 /*
-// TestAggsRawMessage is a test for issue #51 (https://github.com/olivere/elastic/issues/51).
+// TestAggsRawMessage is a test for issue #51 (https://github.com/topfreegames/elastic/issues/51).
 // See also: http://play.golang.org/p/b8fzGMxrMC
 func TestAggsRawMessage(t *testing.T) {
 	f := json.RawMessage([]byte(`42`))
