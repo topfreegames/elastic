@@ -18,6 +18,10 @@ import (
 // Elasticsearch-specific HTTP request
 type Request http.Request
 
+func IsAWSRequest(req *http.Request) bool {
+	return strings.Contains(req.URL.Host, ".es.amazonaws.com")
+}
+
 // NewRequest is a http.Request and adds features such as encoding the body.
 func NewRequest(method, url string) (*Request, error) {
 	req, err := http.NewRequest(method, url, nil)
@@ -26,6 +30,13 @@ func NewRequest(method, url string) (*Request, error) {
 	}
 	req.Header.Add("User-Agent", "elastic/"+Version+" ("+runtime.GOOS+"-"+runtime.GOARCH+")")
 	req.Header.Add("Accept", "application/json")
+
+	if IsAWSRequest(req) {
+		if err = SignAWSESServiceRequest(req); err != nil {
+			return nil, err
+		}
+	}
+
 	return (*Request)(req), nil
 }
 
@@ -117,6 +128,11 @@ func (r *Request) setBodyReader(body io.Reader) error {
 			r.ContentLength = int64(v.Len())
 		case *bytes.Buffer:
 			r.ContentLength = int64(v.Len())
+		}
+	}
+	if IsAWSRequest((*http.Request)(r)) {
+		if err := SignAWSESServiceRequest((*http.Request)(r)); err != nil {
+			return err
 		}
 	}
 	return nil

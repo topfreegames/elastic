@@ -862,6 +862,9 @@ func (c *Client) healthcheck(timeout time.Duration, force bool) {
 		params.Set("timeout", fmt.Sprintf("%dms", timeoutInMillis))
 		req, err := NewRequest("HEAD", conn.URL()+"/?"+params.Encode())
 		if err == nil {
+			if IsAWSRequest((*http.Request)(req)) {
+				_ = SignAWSESServiceRequest((*http.Request)(req))
+			}
 			if basicAuth {
 				req.SetBasicAuth(basicAuthUsername, basicAuthPassword)
 			}
@@ -910,6 +913,9 @@ func (c *Client) startupHealthcheck(timeout time.Duration) error {
 			req, err := http.NewRequest("HEAD", url, nil)
 			if err != nil {
 				return err
+			}
+			if IsAWSRequest((*http.Request)(req)) {
+				_ = SignAWSESServiceRequest((*http.Request)(req))
 			}
 			if basicAuth {
 				req.SetBasicAuth(basicAuthUsername, basicAuthPassword)
