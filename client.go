@@ -745,6 +745,10 @@ func (c *Client) sniffNode(url string) []*conn {
 	}
 	c.mu.RUnlock()
 
+	if IsAWSRequest((*http.Request)(req)) {
+		err = SignAWSESServiceRequest((*http.Request)(req))
+	}
+
 	res, err := c.c.Do((*http.Request)(req))
 	if err != nil {
 		return nodes
@@ -1066,6 +1070,13 @@ func (c *Client) PerformRequest(method, path string, params url.Values, body int
 		c.dumpRequest((*http.Request)(req))
 
 		// Get response
+		if IsAWSRequest((*http.Request)(req)) {
+			err = SignAWSESServiceRequest((*http.Request)(req))
+			if err != nil {
+				return nil, err
+			}
+		}
+
 		res, err := c.c.Do((*http.Request)(req))
 		if err != nil {
 			retries -= 1
