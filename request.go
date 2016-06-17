@@ -18,10 +18,6 @@ import (
 // Elasticsearch-specific HTTP request
 type Request http.Request
 
-func IsAWSRequest(req *http.Request) bool {
-	return strings.Contains(req.URL.Host, ".es.amazonaws.com")
-}
-
 // NewRequest is a http.Request and adds features such as encoding the body.
 func NewRequest(method, url string) (*Request, error) {
 	req, err := http.NewRequest(method, url, nil)

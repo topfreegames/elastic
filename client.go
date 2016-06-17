@@ -745,10 +745,6 @@ func (c *Client) sniffNode(url string) []*conn {
 	}
 	c.mu.RUnlock()
 
-	if IsAWSRequest((*http.Request)(req)) {
-		err = SignAWSESServiceRequest((*http.Request)(req))
-	}
-
 	res, err := c.c.Do((*http.Request)(req))
 	if err != nil {
 		return nodes
@@ -866,9 +862,6 @@ func (c *Client) healthcheck(timeout time.Duration, force bool) {
 		params.Set("timeout", fmt.Sprintf("%dms", timeoutInMillis))
 		req, err := NewRequest("HEAD", conn.URL()+"/?"+params.Encode())
 		if err == nil {
-			if IsAWSRequest((*http.Request)(req)) {
-				_ = SignAWSESServiceRequest((*http.Request)(req))
-			}
 			if basicAuth {
 				req.SetBasicAuth(basicAuthUsername, basicAuthPassword)
 			}
@@ -917,9 +910,6 @@ func (c *Client) startupHealthcheck(timeout time.Duration) error {
 			req, err := http.NewRequest("HEAD", url, nil)
 			if err != nil {
 				return err
-			}
-			if IsAWSRequest((*http.Request)(req)) {
-				_ = SignAWSESServiceRequest((*http.Request)(req))
 			}
 			if basicAuth {
 				req.SetBasicAuth(basicAuthUsername, basicAuthPassword)
@@ -1070,12 +1060,6 @@ func (c *Client) PerformRequest(method, path string, params url.Values, body int
 		c.dumpRequest((*http.Request)(req))
 
 		// Get response
-		if IsAWSRequest((*http.Request)(req)) {
-			err = SignAWSESServiceRequest((*http.Request)(req))
-			if err != nil {
-				return nil, err
-			}
-		}
 
 		res, err := c.c.Do((*http.Request)(req))
 		if err != nil {

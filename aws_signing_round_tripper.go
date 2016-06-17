@@ -4,30 +4,38 @@ import (
 	"bytes"
 	"io/ioutil"
 	"net/http"
-	"strings"
 	"time"
 
 	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/defaults"
+	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/request"
 	"github.com/aws/aws-sdk-go/private/signer/v4"
 )
 
 const SERVICE_NAME = "es"
 
-func getRegion(url string) string {
-	urlSplitted := strings.Split(url, ".")
-	return urlSplitted[len(urlSplitted)-4]
+type AWSSigningRoundTripper struct {
+	region      string
+	credentials *credentials.Credentials
+	inner       http.RoundTripper
 }
 
-func SignAWSESServiceRequest(req *http.Request) error {
+func NewAWSSigningRoundTripper(inner http.RoundTripper, region string, credentials *credentials.Credentials) *AWSSigningRoundTripper {
+	if inner == nil {
+		inner = http.DefaultTransport
+	}
+	p := &AWSSigningRoundTripper{inner: inner, region: region, credentials: credentials}
+	return p
+}
+
+func (tr *AWSSigningRoundTripper) RoundTrip(req *http.Request) (*http.Response, error) {
 	var body []byte
 	var err error
 
 	if req.Body != nil {
 		body, err = ioutil.ReadAll(req.Body)
 		if err != nil {
-			return err
+			return nil, err
 		}
 	}
 
@@ -43,8 +51,8 @@ func SignAWSESServiceRequest(req *http.Request) error {
 	}
 
 	awsReq := &request.Request{}
-	awsReq.Config.Credentials = defaults.CredChain(defaults.Config(), defaults.Handlers())
-	awsReq.Config.Region = aws.String(getRegion(req.URL.Host))
+	awsReq.Config.Credentials = tr.credentials
+	awsReq.Config.Region = aws.String(tr.region)
 	awsReq.ClientInfo.ServiceName = SERVICE_NAME
 	awsReq.HTTPRequest = req
 	awsReq.Time = time.Now()
@@ -57,7 +65,7 @@ func SignAWSESServiceRequest(req *http.Request) error {
 	v4.Sign(awsReq)
 
 	if awsReq.Error != nil {
-		return awsReq.Error
+		return nil, awsReq.Error
 	}
 
 	req.URL.Path = oldPath
@@ -65,6 +73,11 @@ func SignAWSESServiceRequest(req *http.Request) error {
 		req.Body = ioutil.NopCloser(bytes.NewReader(body))
 	}
 
-	return nil
+	res, err := tr.inner.RoundTrip(req)
 
+	if err != nil {
+		return nil, err
+	} else {
+		return res, err
+	}
 }
